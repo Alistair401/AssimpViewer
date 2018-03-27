@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Node.h"
+#include <GL\glew.h>
 
 Node::Node(std::string name)
 {
@@ -26,6 +27,11 @@ void Node::RenderHierarchy()
 	this->RenderHierarchy("");
 }
 
+void Node::SetTransform(glm::mat4 transform)
+{
+	this->transform = transform;
+}
+
 void Node::RenderHierarchy(std::string placeholder)
 {
 	this->Render();
@@ -37,6 +43,10 @@ void Node::RenderHierarchy(std::string placeholder)
 
 void Node::Render()
 {
+	for (auto mesh: meshes)
+	{
+		mesh->Render();
+	}
 }
 
 void Node::AddChild(Node * child)

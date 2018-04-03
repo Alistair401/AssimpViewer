@@ -22,23 +22,14 @@ std::vector<Mesh*>& Node::GetMeshes()
 	return meshes;
 }
 
-void Node::RenderHierarchy()
-{
-	this->RenderHierarchy("");
-}
-
 void Node::SetTransform(glm::mat4 transform)
 {
 	this->transform = transform;
 }
 
-void Node::RenderHierarchy(std::string placeholder)
+glm::mat4 & Node::GetTransform()
 {
-	this->Render();
-	for (auto child: children)
-	{
-		child->RenderHierarchy("");
-	}
+	return transform;
 }
 
 void Node::Render()

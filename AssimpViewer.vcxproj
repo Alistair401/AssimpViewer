@@ -149,6 +149,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnimChannel.h" />
     <ClInclude Include="Import.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
@@ -158,6 +160,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimChannel.cpp" />
     <ClCompile Include="AssimpViewer.cpp" />
     <ClCompile Include="Import.cpp" />
     <ClCompile Include="Mesh.cpp" />

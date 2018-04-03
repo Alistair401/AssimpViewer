@@ -7,4 +7,3 @@ class Import
 public:
 	static Model* LoadFile(std::string filename);
 };
-

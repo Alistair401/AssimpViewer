@@ -32,14 +32,6 @@ glm::mat4 & Node::GetTransform()
 	return transform;
 }
 
-void Node::Render()
-{
-	for (auto mesh: meshes)
-	{
-		mesh->Render();
-	}
-}
-
 void Node::AddChild(Node * child)
 {
 	children.push_back(child);

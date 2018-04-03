@@ -46,18 +46,18 @@ void Shader::AddComponent(std::string filename, GLenum type)
 
 void Shader::Link()
 {
-	program = glCreateProgram();
+	identifier = glCreateProgram();
 	for (auto component : components)
 	{
-		glAttachShader(program, component);
+		glAttachShader(identifier, component);
 	}
-	glLinkProgram(program);
+	glLinkProgram(identifier);
 
 	GLint success;
 	char log[512];
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
+	glGetProgramiv(identifier, GL_LINK_STATUS, &success);
 	if (!success) {
-		glGetProgramInfoLog(program, 512, NULL, log);
+		glGetProgramInfoLog(identifier, 512, NULL, log);
 		std::cout << "Failed to link shader program" << std::endl;
 		std::cout << log << std::endl;
 		return;
@@ -66,10 +66,15 @@ void Shader::Link()
 
 void Shader::Use()
 {
-	glUseProgram(program);
+	glUseProgram(identifier);
 }
 
-void Shader::setMat4(const std::string & name, const glm::mat4 & mat) const
+void Shader::SetMat4(const std::string & name, const glm::mat4 & mat) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(identifier, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+}
+
+GLuint & Shader::ID()
+{
+	return identifier;
 }

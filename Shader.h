@@ -10,9 +10,10 @@ public:
 	void AddComponent(std::string filename, GLenum type);
 	void Link();
 	void Use();
-	void setMat4(const std::string & name, const glm::mat4 & mat) const;
+	void SetMat4(const std::string & name, const glm::mat4 & mat) const;
+	GLuint& ID();
 private:
 	std::vector<GLuint> components;
-	GLuint program;
+	GLuint identifier;
 };
 

@@ -8,8 +8,8 @@ struct MeshVertex {
 	glm::vec3 normal;
 	glm::vec3 colour;
 	glm::vec2 uv;
-	GLuint bone_ids[4];
-	GLfloat bone_weights[4];
+	glm::uvec4 bone_ids;
+	glm::vec4 bone_weights;
 };
 
 struct Bone {
@@ -25,15 +25,14 @@ public:
 	void AddIndex(GLuint index);
 	void AddWeight(unsigned int vertex_index, unsigned int bone_index, GLuint bone_id, GLfloat weight);
 	void AddBone(Bone* bone);
-	std::vector<Bone*>& GetBones();
-	void GenBuffers();
-	void Render();
-private:
+	size_t NumVertices();
+	size_t NumBones();
+	size_t NumIndices();
 	std::vector<MeshVertex> vertices;
 	std::vector<GLuint> indices;
 	std::vector<Bone*> bones;
 	GLuint vbo;
 	GLuint ibo;
-	GLuint ssbo;
-	GLuint ssbo_binding =  1;
+	GLuint bbo;
+	GLuint bbo_binding = 1;
 };

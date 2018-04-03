@@ -7,10 +7,11 @@
 
 static glm::mat4 AIToGLMMat4(aiMatrix4x4 ai_mat) {
 	glm::mat4 result;
+	aiMatrix4x4 transposed = ai_mat.Transpose();
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++)
 		{
-			result[i][j] = ai_mat[i][j];
+			result[i][j] = transposed[i][j];
 		}
 	}
 	return result;
@@ -19,7 +20,7 @@ static glm::mat4 AIToGLMMat4(aiMatrix4x4 ai_mat) {
 Node* ExploreHeirarchy(aiNode* ai_node, const aiScene* ai_scene) {
 	Node* node = new Node(ai_node->mName.C_Str());
 
-	glm::mat4 relative_transform = AIToGLMMat4(ai_node->mTransformation.Transpose());
+	glm::mat4 relative_transform = AIToGLMMat4(ai_node->mTransformation);
 
 	node->SetTransform(relative_transform);
 
@@ -31,7 +32,14 @@ Node* ExploreHeirarchy(aiNode* ai_node, const aiScene* ai_scene) {
 
 		for (size_t i = 0; i < ai_mesh->mNumVertices; i++)
 		{
-			MeshVertex mesh_vertex = { glm::vec3(0.0), glm::vec3(0.0), glm::vec3{1,0,1}, glm::vec2(0.0), {0,0,0,0},{0.0f,0.0f,0.0f,0.0f} };
+			MeshVertex mesh_vertex = {
+				glm::vec3(0.0),
+				glm::vec3(0.0),
+				glm::vec3{1,0,1},
+				glm::vec2(0.0),
+				glm::uvec4{0,0,0,0},
+				glm::vec4{0.0,0.0,0.0,0.0}
+			};
 
 			if (ai_mesh->HasPositions()) {
 				aiVector3D ai_pos = ai_mesh->mVertices[i];
@@ -87,8 +95,6 @@ Node* ExploreHeirarchy(aiNode* ai_node, const aiScene* ai_scene) {
 				}
 			}
 		}
-
-		mesh->GenBuffers();
 
 		node->AddMesh(mesh);
 	}
@@ -146,7 +152,7 @@ void ProcessAnimations(Model* model, const aiScene* ai_scene) {
 void GatherBones(Model* model, Node* node) {
 
 	for (Mesh* mesh : node->GetMeshes()) {
-		for (Bone* bone : mesh->GetBones()) {
+		for (Bone* bone : mesh->bones) {
 			model->RegisterBone(bone);
 		}
 	}
@@ -166,6 +172,8 @@ Model* ProcessScene(const aiScene* ai_scene) {
 	GatherBones(model, root_node);
 
 	ProcessAnimations(model, ai_scene);
+
+	model->SetInverseRootTransform(AIToGLMMat4(ai_scene->mRootNode->mTransformation));
 
 	return model;
 }

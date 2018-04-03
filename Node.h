@@ -13,7 +13,6 @@ public:
 	std::vector<Mesh*>& GetMeshes();
 	void SetTransform(glm::mat4 transform);
 	glm::mat4& GetTransform();
-	void Render();
 private:
 	std::string name;
 	std::vector<Mesh*> meshes;

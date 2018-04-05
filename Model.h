@@ -4,6 +4,12 @@
 #include <unordered_map>
 #include "Shader.h"
 
+struct Key {
+	size_t position;
+	size_t rotation;
+	size_t scaling;
+};
+
 class Model
 {
 public:

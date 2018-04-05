@@ -113,6 +113,8 @@ void ProcessAnimations(Model* model, const aiScene* ai_scene) {
 
 		Animation* animation = new Animation();
 		animation->SetName(ai_animation->mName.C_Str());
+		animation->SetTickRate(ai_animation->mTicksPerSecond);
+		animation->SetDuration(ai_animation->mDuration);
 
 		for (size_t j = 0; j < ai_animation->mNumChannels; j++)
 		{
@@ -145,6 +147,7 @@ void ProcessAnimations(Model* model, const aiScene* ai_scene) {
 			animation->AddChannel(channel);
 		}
 
+		std::cout << "Found animation: " << animation->GetName() << std::endl;
 		model->AddAnimation(animation);
 	}
 }

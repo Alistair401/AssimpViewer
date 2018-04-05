@@ -29,6 +29,16 @@ AnimChannel * Animation::GetChannel(std::string name)
 	return channels[name];
 }
 
+void Animation::SetDuration(double ticks)
+{
+	this->duration = ticks;
+}
+
+double Animation::GetDuration()
+{
+	return duration;
+}
+
 std::string Animation::GetName()
 {
 	return name;

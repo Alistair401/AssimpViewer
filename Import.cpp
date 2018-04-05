@@ -17,10 +17,11 @@ static glm::mat4 AIToGLMMat4(aiMatrix4x4 ai_mat) {
 	return result;
 }
 
-Node* ExploreHeirarchy(aiNode* ai_node, const aiScene* ai_scene) {
+Node* ExploreHeirarchy(aiNode* ai_node, const aiScene* ai_scene, glm::mat4 parent_transform, bool transform_vertices) {
 	Node* node = new Node(ai_node->mName.C_Str());
 
 	glm::mat4 relative_transform = AIToGLMMat4(ai_node->mTransformation);
+	glm::mat4 node_transform = parent_transform * relative_transform;
 
 	node->SetTransform(relative_transform);
 
@@ -43,7 +44,11 @@ Node* ExploreHeirarchy(aiNode* ai_node, const aiScene* ai_scene) {
 
 			if (ai_mesh->HasPositions()) {
 				aiVector3D ai_pos = ai_mesh->mVertices[i];
-				mesh_vertex.position = { ai_pos.x,ai_pos.y,ai_pos.z };
+				glm::vec4 position = glm::vec4(ai_pos.x, ai_pos.y, ai_pos.z, 1.0f);
+				if (transform_vertices) {
+					position = node_transform * position;
+				}
+				mesh_vertex.position = { position.x, position.y, position.z };
 			}
 
 			if (ai_mesh->HasNormals()) {
@@ -100,7 +105,7 @@ Node* ExploreHeirarchy(aiNode* ai_node, const aiScene* ai_scene) {
 	}
 
 	for (unsigned int child_index = 0; child_index < ai_node->mNumChildren; child_index++) {
-		node->AddChild(ExploreHeirarchy(ai_node->mChildren[child_index], ai_scene));
+		node->AddChild(ExploreHeirarchy(ai_node->mChildren[child_index], ai_scene, node_transform, transform_vertices));
 	}
 
 	return node;
@@ -168,13 +173,13 @@ void GatherBones(Model* model, Node* node) {
 Model* ProcessScene(const aiScene* ai_scene) {
 	Model* model = new Model();
 
-	Node* root_node = ExploreHeirarchy(ai_scene->mRootNode, ai_scene);
+	ProcessAnimations(model, ai_scene);
+
+	Node* root_node = ExploreHeirarchy(ai_scene->mRootNode, ai_scene, glm::mat4(1.0f), !model->IsAnimated());
 
 	model->SetRoot(root_node);
 
 	GatherBones(model, root_node);
-
-	ProcessAnimations(model, ai_scene);
 
 	model->SetInverseRootTransform(AIToGLMMat4(ai_scene->mRootNode->mTransformation));
 

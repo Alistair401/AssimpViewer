@@ -9,8 +9,14 @@ void Model::SetRoot(Node * root)
 	this->root = root;
 }
 
+bool Model::IsAnimated()
+{
+	return is_animated;
+}
+
 void Model::AddAnimation(Animation * animation)
 {
+	is_animated = true;
 	animations[animation->GetName()] = animation;
 }
 
@@ -135,6 +141,10 @@ void Model::UpdateTransformsHierarchy(Node* node, Animation* animation, double t
 
 void Model::Update(double delta)
 {
+	if (!is_animated) {
+		return;
+	}
+
 	if (animations.find(current_animation) == animations.end()) {
 		return;
 	}
@@ -151,16 +161,18 @@ void Model::Update(double delta)
 	UpdateTransformsHierarchy(root, animation, current_tick, glm::mat4(1.0f));
 }
 
-void RenderHierarchy(Node* node) {
+void Model::RenderHierarchy(Node* node) {
 	for (Mesh* mesh : node->GetMeshes()) {
-		std::vector<glm::mat4> bone_tranforms;
-		for (Bone* bone : mesh->bones) {
-			bone_tranforms.push_back(bone->transform);
-		}
+		if (is_animated) {
+			std::vector<glm::mat4> bone_tranforms;
+			for (Bone* bone : mesh->bones) {
+				bone_tranforms.push_back(bone->transform);
+			}
 
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh->bbo);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, mesh->NumBones() * sizeof(glm::mat4), &bone_tranforms[0], GL_STATIC_DRAW);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, mesh->bbo_binding, mesh->bbo);
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh->bbo);
+			glBufferData(GL_SHADER_STORAGE_BUFFER, mesh->NumBones() * sizeof(glm::mat4), &bone_tranforms[0], GL_STATIC_DRAW);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, mesh->bbo_binding, mesh->bbo);
+		}
 
 		GLsizei stride = sizeof(MeshVertex);
 
@@ -197,7 +209,6 @@ void RenderHierarchy(Node* node) {
 
 void Model::GenBufferHierarchy(Node* node) {
 	for (Mesh* mesh : node->GetMeshes()) {
-
 		glGenBuffers(1, &mesh->vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
 		glBufferData(GL_ARRAY_BUFFER, mesh->NumVertices() * sizeof(MeshVertex), &mesh->vertices[0], GL_STATIC_DRAW);
@@ -206,9 +217,11 @@ void Model::GenBufferHierarchy(Node* node) {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ibo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->NumIndices() * sizeof(GLuint), &mesh->indices[0], GL_STATIC_DRAW);
 
-		GLuint ssbo_index = glGetProgramResourceIndex(shader->ID(), GL_SHADER_STORAGE_BLOCK, "bone_buffer");
-		glGenBuffers(1, &mesh->bbo);
-		glShaderStorageBlockBinding(shader->ID(), ssbo_index, mesh->bbo_binding);
+		if (is_animated) {
+			GLuint ssbo_index = glGetProgramResourceIndex(shader->ID(), GL_SHADER_STORAGE_BLOCK, "bone_buffer");
+			glGenBuffers(1, &mesh->bbo);
+			glShaderStorageBlockBinding(shader->ID(), ssbo_index, mesh->bbo_binding);
+		}
 	}
 
 	for (auto child : node->GetChildren())

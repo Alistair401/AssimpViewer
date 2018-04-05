@@ -24,9 +24,9 @@ public:
 	size_t NumPositionKeys();
 	size_t NumRotationKeys();
 	size_t NumScalingKeys();
-	VectorKey GetPositionKey(size_t index);
-	QuaternionKey GetRotationKey(size_t index);
-	VectorKey GetScalingKey(size_t index);
+	VectorKey& GetPositionKey(size_t index);
+	QuaternionKey& GetRotationKey(size_t index);
+	VectorKey& GetScalingKey(size_t index);
 	size_t GetPositionKeyIndex(double time);
 	size_t GetRotationKeyIndex(double time);
 	size_t GetScalingKeyIndex(double time);

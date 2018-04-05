@@ -1,5 +1,33 @@
 #include "stdafx.h"
 #include "AnimChannel.h"
+#include <algorithm>
+
+struct _CompareKeys {
+	bool operator() (const VectorKey & left, const VectorKey & right)
+	{
+		return left.time < right.time;
+	}
+	bool operator() (const VectorKey & left, double right)
+	{
+		return left.time < right;
+	}
+	bool operator() (double left, const VectorKey & right)
+	{
+		return left < right.time;
+	}
+	bool operator() (const QuaternionKey & left, const QuaternionKey & right)
+	{
+		return left.time < right.time;
+	}
+	bool operator() (const QuaternionKey & left, double right)
+	{
+		return left.time < right;
+	}
+	bool operator() (double left, const QuaternionKey & right)
+	{
+		return left < right.time;
+	}
+} CompareKeys;
 
 void AnimChannel::SetName(std::string name)
 {
@@ -41,50 +69,35 @@ size_t AnimChannel::NumScalingKeys()
 	return scaling_keys.size();
 }
 
-VectorKey AnimChannel::GetPositionKey(size_t index)
+VectorKey& AnimChannel::GetPositionKey(size_t index)
 {
 	return position_keys[index];
 }
 
-QuaternionKey AnimChannel::GetRotationKey(size_t index)
+QuaternionKey& AnimChannel::GetRotationKey(size_t index)
 {
 	return rotation_keys[index];
 }
 
-VectorKey AnimChannel::GetScalingKey(size_t index)
+VectorKey& AnimChannel::GetScalingKey(size_t index)
 {
 	return scaling_keys[index];
 }
 
 size_t AnimChannel::GetPositionKeyIndex(double time)
 {
-	for (size_t i = 0; i < position_keys.size(); i++)
-	{
-		if (position_keys[i].time > time) {
-			return i;
-		}
-	}
-	return position_keys.size() - 1;
+	auto it = std::upper_bound(position_keys.begin(), position_keys.end(), time, CompareKeys);
+	return it - position_keys.begin();
 }
 
 size_t AnimChannel::GetRotationKeyIndex(double time)
 {
-	for (size_t i = 0; i < rotation_keys.size(); i++)
-	{
-		if (rotation_keys[i].time > time) {
-			return i;
-		}
-	}
-	return rotation_keys.size() - 1;
+	auto it = std::upper_bound(rotation_keys.begin(), rotation_keys.end(), time, CompareKeys);
+	return it - rotation_keys.begin();
 }
 
 size_t AnimChannel::GetScalingKeyIndex(double time)
 {
-	for (size_t i = 0; i < scaling_keys.size(); i++)
-	{
-		if (scaling_keys[i].time > time) {
-			return i;
-		}
-	}
-	return scaling_keys.size() - 1;
+	auto it = std::upper_bound(scaling_keys.begin(), scaling_keys.end(), time, CompareKeys);
+	return it - scaling_keys.begin();
 }

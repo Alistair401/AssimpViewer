@@ -191,7 +191,7 @@ void Model::RenderHierarchy(Node* node) {
 		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride, (const void*)(sizeof(GLfloat) * 9));
 
 		glEnableVertexAttribArray(4); // bone_ids abcd
-		glVertexAttribPointer(4, 4, GL_UNSIGNED_INT, GL_FALSE, stride, (const void*)(sizeof(GLfloat) * 11));
+		glVertexAttribIPointer(4, 4, GL_UNSIGNED_INT, stride, (const void*)(sizeof(GLfloat) * 11));
 
 		glEnableVertexAttribArray(5); // bone_weights abcd
 		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, stride, (const void*)((sizeof(GLfloat) * 11) + sizeof(GLuint) * 4));

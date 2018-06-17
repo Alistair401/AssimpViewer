@@ -4,7 +4,7 @@ in layout(location=0) vec3 local_pos;
 in layout(location=1) vec3 normal;
 in layout(location=2) vec3 vertex_color;
 in layout(location=3) vec2 tex_coord;
-in layout(location=4) ivec4 bone_ids;
+in layout(location=4) uvec4 bone_ids;
 in layout(location=5) vec4 bone_weights;
 
 layout (std430) buffer bone_buffer

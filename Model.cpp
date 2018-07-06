@@ -172,8 +172,6 @@ void Model::Update(double delta)
 	UpdateTransformsHierarchy(*root, animation, current_tick, glm::mat4(1.0f));
 }
 
-
-
 void Model::RegisterBone(Bone * bone)
 {
 	bones[bone->name] = bone;

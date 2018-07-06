@@ -157,17 +157,17 @@ void ProcessAnimations(Model* model, const aiScene* ai_scene) {
 	}
 }
 
-void GatherBones(Model* model, Node* node) {
+void GatherBones(Model* model, Node& node) {
 
-	node->ForEachMesh([&](Mesh& mesh) {
+	node.ForEachMesh([&](Mesh& mesh) {
 		for (Bone* bone : mesh.bones) {
 			model->RegisterBone(bone);
 		}
 	});
 
-	for (Node* child : node->GetChildren()) {
+	node.ForEachChild([&](Node& child) {
 		GatherBones(model, child);
-	}
+	});
 }
 
 Model* ProcessScene(const aiScene* ai_scene) {
@@ -179,7 +179,7 @@ Model* ProcessScene(const aiScene* ai_scene) {
 
 	model->SetRoot(root_node);
 
-	GatherBones(model, root_node);
+	GatherBones(model, *root_node);
 
 	model->SetInverseRootTransform(AIToGLMMat4(ai_scene->mRootNode->mTransformation));
 

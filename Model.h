@@ -29,7 +29,7 @@ public:
 private:
 	Shader * shader = nullptr;
 	bool buffered = false;
-	Node * root = nullptr;
+	std::unique_ptr<Node> root;
 	glm::mat4 inverse_root_transform;
 
 	bool is_animated = false;
@@ -39,7 +39,7 @@ private:
 	std::unordered_map<std::string, Bone*> bones;
 	std::vector<Bone*> bone_arr;
 
-	void RenderHierarchy(Node* node);
-	void UpdateTransformsHierarchy(Node* node, Animation* animation, double tick, glm::mat4 parent_transform);
-	void GenBufferHierarchy(Node* root);
+	void RenderHierarchy(Node& node);
+	void UpdateTransformsHierarchy(Node& node, Animation* animation, double tick, glm::mat4 parent_transform);
+	void GenBufferHierarchy(Node& root);
 };

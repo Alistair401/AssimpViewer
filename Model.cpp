@@ -6,7 +6,7 @@
 
 void Model::SetRoot(Node * root)
 {
-	this->root = root;
+	this->root = std::unique_ptr<Node>(std::move(root));
 }
 
 bool Model::IsAnimated()
@@ -119,11 +119,11 @@ glm::mat4 CalcScaling(AnimChannel* channel, double tick) {
 	return glm::scale(identity, interpolated);
 }
 
-void Model::UpdateTransformsHierarchy(Node* node, Animation* animation, double tick, glm::mat4 parent_transform) {
+void Model::UpdateTransformsHierarchy(Node& node, Animation* animation, double tick, glm::mat4 parent_transform) {
 
-	AnimChannel* channel = animation->GetChannel(node->GetName());
+	AnimChannel* channel = animation->GetChannel(node.GetName());
 
-	glm::mat4 node_transform = node->GetTransform();
+	glm::mat4 node_transform = node.GetTransform();
 
 	if (channel != nullptr) {
 		glm::mat4 translation = CalcPosition(channel, tick);
@@ -135,14 +135,14 @@ void Model::UpdateTransformsHierarchy(Node* node, Animation* animation, double t
 
 	glm::mat4 global_transform = parent_transform * node_transform;
 
-	if (bones.find(node->GetName()) != bones.end()) {
-		Bone* bone = bones[node->GetName()];
+	if (bones.find(node.GetName()) != bones.end()) {
+		Bone* bone = bones[node.GetName()];
 		bone->transform = inverse_root_transform * global_transform * bone->offset;
 	}
 
-	for (Node* child : node->GetChildren()) {
+	node.ForEachChild([&](Node& child) {
 		UpdateTransformsHierarchy(child, animation, tick, global_transform);
-	}
+	});
 }
 
 void Model::Update(double delta)
@@ -164,11 +164,11 @@ void Model::Update(double delta)
 		current_tick = 0;
 	}
 
-	UpdateTransformsHierarchy(root, animation, current_tick, glm::mat4(1.0f));
+	UpdateTransformsHierarchy(*root, animation, current_tick, glm::mat4(1.0f));
 }
 
-void Model::RenderHierarchy(Node* node) {
-	node->ForEachMesh([&](Mesh& mesh){
+void Model::RenderHierarchy(Node& node) {
+	node.ForEachMesh([&](Mesh& mesh){
 		if (is_animated) {
 			std::vector<glm::mat4> bone_tranforms;
 			for (Bone* bone : mesh.bones) {
@@ -207,14 +207,13 @@ void Model::RenderHierarchy(Node* node) {
 		glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(mesh.NumIndices()), GL_UNSIGNED_INT, 0);
 	});
 
-	for (auto child : node->GetChildren())
-	{
+	node.ForEachChild([&](Node& child) {
 		RenderHierarchy(child);
-	}
+	});
 }
 
-void Model::GenBufferHierarchy(Node* node) {
-	node->ForEachMesh([&](Mesh& mesh){
+void Model::GenBufferHierarchy(Node& node) {
+	node.ForEachMesh([&](Mesh& mesh){
 		glGenBuffers(1, &mesh.vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
 		glBufferData(GL_ARRAY_BUFFER, mesh.NumVertices() * sizeof(MeshVertex), &mesh.vertices[0], GL_STATIC_DRAW);
@@ -230,10 +229,9 @@ void Model::GenBufferHierarchy(Node* node) {
 		}
 	});
 
-	for (auto child : node->GetChildren())
-	{
+	node.ForEachChild([&](Node& child) {
 		GenBufferHierarchy(child);
-	}
+	});
 }
 
 void Model::RegisterBone(Bone * bone)
@@ -245,10 +243,10 @@ void Model::Render()
 {
 	shader->Use();
 	if (!buffered) {
-		GenBufferHierarchy(root);
+		GenBufferHierarchy(*root);
 		buffered = true;
 	}
-	RenderHierarchy(root);
+	RenderHierarchy(*root);
 }
 
 void Model::SetInverseRootTransform(glm::mat4 transform)

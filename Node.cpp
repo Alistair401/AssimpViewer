@@ -8,11 +8,6 @@ Node::Node(std::string name)
 	this->name = name;
 }
 
-std::vector<Node*>& Node::GetChildren()
-{
-	return children;
-}
-
 void Node::AddMesh(Mesh * mesh)
 {
 	meshes.emplace_back(std::move(mesh));
@@ -37,7 +32,14 @@ glm::mat4 & Node::GetTransform()
 
 void Node::AddChild(Node * child)
 {
-	children.push_back(child);
+	children.emplace_back(std::move(child));
+}
+
+void Node::ForEachChild(const std::function<void(Node&)>& f)
+{
+	for (auto&& child : children) {
+		f(*child);
+	}
 }
 
 std::string & Node::GetName()

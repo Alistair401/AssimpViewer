@@ -1,6 +1,9 @@
 #pragma once
-#include <vector>
+
 #include "Mesh.h"
+
+#include <memory>
+#include <functional>
 
 class Node
 {
@@ -10,12 +13,12 @@ public:
 	void AddChild(Node* child);
 	std::vector<Node*>& GetChildren();
 	void AddMesh(Mesh* mesh);
-	std::vector<Mesh*>& GetMeshes();
+	void ForEachMesh(const std::function<void(Mesh&)>& f);
 	void SetTransform(glm::mat4 transform);
 	glm::mat4& GetTransform();
 private:
 	std::string name;
-	std::vector<Mesh*> meshes;
+	std::vector<std::unique_ptr<Mesh>> meshes;
 	std::vector<Node*> children;
 	glm::mat4 transform;
 };

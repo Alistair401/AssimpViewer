@@ -159,11 +159,11 @@ void ProcessAnimations(Model* model, const aiScene* ai_scene) {
 
 void GatherBones(Model* model, Node* node) {
 
-	for (Mesh* mesh : node->GetMeshes()) {
-		for (Bone* bone : mesh->bones) {
+	node->ForEachMesh([&](Mesh& mesh) {
+		for (Bone* bone : mesh.bones) {
 			model->RegisterBone(bone);
 		}
-	}
+	});
 
 	for (Node* child : node->GetChildren()) {
 		GatherBones(model, child);

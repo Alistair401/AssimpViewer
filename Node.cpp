@@ -2,6 +2,7 @@
 #include "Node.h"
 #include <GL\glew.h>
 
+
 Node::Node(std::string name)
 {
 	this->name = name;
@@ -14,12 +15,14 @@ std::vector<Node*>& Node::GetChildren()
 
 void Node::AddMesh(Mesh * mesh)
 {
-	meshes.push_back(mesh);
+	meshes.emplace_back(std::move(mesh));
 }
 
-std::vector<Mesh*>& Node::GetMeshes()
+void Node::ForEachMesh(const std::function<void(Mesh&)>& f)
 {
-	return meshes;
+	for (auto&& mesh : meshes) {
+		f(*mesh);
+	}
 }
 
 void Node::SetTransform(glm::mat4 transform)

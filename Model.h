@@ -17,6 +17,7 @@ class Model
 {
 public:
 	void SetRoot(Node* root);
+	Node& GetRoot();
 	bool IsAnimated();
 	void AddAnimation(Animation* animation);
 	void SetAnimation(std::string name);
@@ -24,8 +25,9 @@ public:
 	Shader& GetShader();
 	void Update(double delta);
 	void RegisterBone(Bone* bone);
-	void Render();
 	void SetInverseRootTransform(glm::mat4 transform);
+	void SetBuffered(bool buffered);
+	bool IsBuffered();
 private:
 	Shader * shader = nullptr;
 	bool buffered = false;
@@ -39,7 +41,5 @@ private:
 	std::unordered_map<std::string, Bone*> bones;
 	std::vector<Bone*> bone_arr;
 
-	void RenderHierarchy(Node& node);
-	void UpdateTransformsHierarchy(Node& node, Animation* animation, double tick, glm::mat4 parent_transform);
-	void GenBufferHierarchy(Node& root);
+	void UpdateTransformsHierarchy(Node & node, Animation * animation, double tick, glm::mat4 parent_transform);
 };

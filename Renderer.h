@@ -4,6 +4,6 @@
 class Renderer
 {
 public:
-	void Render(Model& model);
+	static void Render(Model& model);
 };
 

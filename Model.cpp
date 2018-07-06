@@ -9,6 +9,11 @@ void Model::SetRoot(Node * root)
 	this->root = std::unique_ptr<Node>(std::move(root));
 }
 
+Node & Model::GetRoot()
+{
+	return *root;
+}
+
 bool Model::IsAnimated()
 {
 	return is_animated;
@@ -167,89 +172,24 @@ void Model::Update(double delta)
 	UpdateTransformsHierarchy(*root, animation, current_tick, glm::mat4(1.0f));
 }
 
-void Model::RenderHierarchy(Node& node) {
-	node.ForEachMesh([&](Mesh& mesh){
-		if (is_animated) {
-			std::vector<glm::mat4> bone_tranforms;
-			for (Bone* bone : mesh.bones) {
-				bone_tranforms.push_back(bone->transform);
-			}
 
-			glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh.bbo);
-			glBufferData(GL_SHADER_STORAGE_BUFFER, mesh.NumBones() * sizeof(glm::mat4), &bone_tranforms[0], GL_STATIC_DRAW);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, mesh.bbo_binding, mesh.bbo);
-		}
-
-		GLsizei stride = sizeof(MeshVertex);
-
-		glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-
-		glEnableVertexAttribArray(0); // pos xyz
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, 0);
-
-		glEnableVertexAttribArray(1); // norm xyz
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (const void*)(sizeof(GLfloat) * 3));
-
-		glEnableVertexAttribArray(2); // color rgb
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (const void*)(sizeof(GLfloat) * 6));
-
-		glEnableVertexAttribArray(3); // tex uv
-		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride, (const void*)(sizeof(GLfloat) * 9));
-
-		glEnableVertexAttribArray(4); // bone_ids abcd
-		glVertexAttribIPointer(4, 4, GL_UNSIGNED_INT, stride, (const void*)(sizeof(GLfloat) * 11));
-
-		glEnableVertexAttribArray(5); // bone_weights abcd
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, stride, (const void*)((sizeof(GLfloat) * 11) + sizeof(GLuint) * 4));
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-
-		glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(mesh.NumIndices()), GL_UNSIGNED_INT, 0);
-	});
-
-	node.ForEachChild([&](Node& child) {
-		RenderHierarchy(child);
-	});
-}
-
-void Model::GenBufferHierarchy(Node& node) {
-	node.ForEachMesh([&](Mesh& mesh){
-		glGenBuffers(1, &mesh.vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
-		glBufferData(GL_ARRAY_BUFFER, mesh.NumVertices() * sizeof(MeshVertex), &mesh.vertices[0], GL_STATIC_DRAW);
-
-		glGenBuffers(1, &mesh.ibo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.NumIndices() * sizeof(GLuint), &mesh.indices[0], GL_STATIC_DRAW);
-
-		if (is_animated) {
-			GLuint ssbo_index = glGetProgramResourceIndex(shader->ID(), GL_SHADER_STORAGE_BLOCK, "bone_buffer");
-			glGenBuffers(1, &mesh.bbo);
-			glShaderStorageBlockBinding(shader->ID(), ssbo_index, mesh.bbo_binding);
-		}
-	});
-
-	node.ForEachChild([&](Node& child) {
-		GenBufferHierarchy(child);
-	});
-}
 
 void Model::RegisterBone(Bone * bone)
 {
 	bones[bone->name] = bone;
 }
 
-void Model::Render()
-{
-	shader->Use();
-	if (!buffered) {
-		GenBufferHierarchy(*root);
-		buffered = true;
-	}
-	RenderHierarchy(*root);
-}
-
 void Model::SetInverseRootTransform(glm::mat4 transform)
 {
 	this->inverse_root_transform = transform;
+}
+
+void Model::SetBuffered(bool buffered)
+{
+	this->buffered = buffered;
+}
+
+bool Model::IsBuffered()
+{
+	return buffered;
 }

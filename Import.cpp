@@ -65,7 +65,7 @@ void ProcessFaces(Mesh* mesh, aiMesh* ai_mesh) {
 	}
 }
 
-void ProcessBones(Model* model, Mesh* mesh, aiMesh* ai_mesh) {
+void ProcessBones(AnimatedModel* model, Mesh* mesh, aiMesh* ai_mesh) {
 	std::unordered_map<unsigned int, unsigned int> weight_count;
 	for (unsigned int i = 0; i < ai_mesh->mNumBones; i++)
 	{
@@ -90,7 +90,7 @@ void ProcessBones(Model* model, Mesh* mesh, aiMesh* ai_mesh) {
 	}
 }
 
-Mesh* ProcessMesh(Model* model, aiMesh* ai_mesh) {
+Mesh* ProcessMesh(AnimatedModel* model, aiMesh* ai_mesh) {
 	Mesh* mesh = new Mesh();
 	
 	ProcessVertices(mesh, ai_mesh);
@@ -104,7 +104,7 @@ Mesh* ProcessMesh(Model* model, aiMesh* ai_mesh) {
 	return mesh;
 }
 
-Node* ExploreHeirarchy(Model* model, aiNode* ai_node, const aiScene* ai_scene, glm::mat4 parent_transform) {
+Node* ExploreHeirarchy(AnimatedModel* model, aiNode* ai_node, const aiScene* ai_scene, glm::mat4 parent_transform) {
 	Node* node = new Node(ai_node->mName.C_Str());
 
 	glm::mat4 relative_transform = AIToGLMMat4(ai_node->mTransformation);
@@ -125,7 +125,7 @@ Node* ExploreHeirarchy(Model* model, aiNode* ai_node, const aiScene* ai_scene, g
 	return node;
 }
 
-void ProcessAnimations(Model* model, const aiScene* ai_scene) {
+void ProcessAnimations(AnimatedModel* model, const aiScene* ai_scene) {
 	for (size_t i = 0; i < ai_scene->mNumAnimations; i++)
 	{
 		aiAnimation* ai_animation = ai_scene->mAnimations[i];
@@ -171,8 +171,8 @@ void ProcessAnimations(Model* model, const aiScene* ai_scene) {
 	}
 }
 
-Model* ProcessScene(const aiScene* ai_scene) {
-	Model* model = new Model();
+AnimatedModel* ProcessScene(const aiScene* ai_scene) {
+	AnimatedModel* model = new AnimatedModel();
 
 	ProcessAnimations(model, ai_scene);
 
@@ -185,7 +185,7 @@ Model* ProcessScene(const aiScene* ai_scene) {
 	return model;
 }
 
-Model* Import::LoadFile(std::string filename)
+AnimatedModel* Import::LoadAnimatedFile(std::string filename)
 {
 	Assimp::Importer importer;
 
@@ -195,7 +195,7 @@ Model* Import::LoadFile(std::string filename)
 		return nullptr;
 	}
 
-	Model* model = ProcessScene(ai_scene);
+	AnimatedModel* model = ProcessScene(ai_scene);
 
 	return model;
 }

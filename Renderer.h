@@ -1,9 +1,9 @@
 #pragma once
-#include "Model.h"
+#include "AnimatedModel.h"
 
 class Renderer
 {
 public:
-	static void Render(Model& model);
+	static void Render(AnimatedModel& model);
 };
 

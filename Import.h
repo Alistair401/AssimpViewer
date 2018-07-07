@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
-#include "Model.h"
+#include "AnimatedModel.h"
 
 class Import
 {
 public:
-	static Model* LoadFile(std::string filename);
+	static AnimatedModel* LoadAnimatedFile(std::string filename);
 };

@@ -63,6 +63,9 @@
     <ClInclude Include="AnimationEvaluator.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
+    <ClInclude Include="AnimatedModel.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -99,6 +102,9 @@
       <Filter>Source Files\Model</Filter>
     </ClCompile>
     <ClCompile Include="AnimationEvaluator.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedModel.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
   </ItemGroup>

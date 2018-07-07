@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="AnimationEvaluator.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="AnimChannel.h" />
     <ClInclude Include="Import.h" />
@@ -163,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AnimationEvaluator.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="AnimChannel.cpp" />
     <ClCompile Include="AssimpViewer.cpp" />

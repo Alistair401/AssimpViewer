@@ -1,6 +1,8 @@
 #pragma once
 #include "AnimChannel.h"
+
 #include <unordered_map>
+#include <memory>
 
 class Animation
 {
@@ -10,13 +12,14 @@ public:
 	void SetTickRate(double rate);
 	double GetTickRate();
 	void AddChannel(AnimChannel* channel);
-	AnimChannel* GetChannel(std::string name);
+	bool HasChannel(std::string name);
+	AnimChannel& GetChannel(std::string name);
 	void SetDuration(double ticks);
 	double GetDuration();
 private:
 	std::string name;
 	double tick_rate;
 	double duration;
-	std::unordered_map<std::string, AnimChannel*> channels;
+	std::unordered_map<std::string, size_t> channel_mapping;
+	std::vector<std::unique_ptr<AnimChannel>> channels;
 };
-

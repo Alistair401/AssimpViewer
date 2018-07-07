@@ -18,15 +18,23 @@ double Animation::GetTickRate()
 
 void Animation::AddChannel(AnimChannel * channel)
 {
-	channels[channel->GetName()] = channel;
+	channel_mapping[channel->GetName()] = channels.size();
+	channels.emplace_back(std::move(channel));
 }
 
-AnimChannel * Animation::GetChannel(std::string name)
+bool Animation::HasChannel(std::string name)
 {
-	if (channels.find(name) == channels.end()) {
-		return nullptr;
-	}
-	return channels[name];
+	auto found = channel_mapping.find(name);
+	return (found != channel_mapping.end());
+}
+
+AnimChannel& Animation::GetChannel(std::string name)
+{
+	auto found = channel_mapping.find(name);
+
+	assert(found != channel_mapping.end());
+
+	return *channels[found->second];
 }
 
 void Animation::SetDuration(double ticks)

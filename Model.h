@@ -36,10 +36,11 @@ private:
 
 	bool is_animated = false;
 	double current_time = 0.0;
-	std::string current_animation;
-	std::unordered_map<std::string, Animation*> animations;
+	size_t current_animation = 0u;
+	std::unordered_map<std::string, size_t> animation_mapping;
+	std::vector<std::unique_ptr<Animation>> animations;
 	std::unordered_map<std::string, Bone*> bones;
 	std::vector<Bone*> bone_arr;
 
-	void UpdateTransformsHierarchy(Node & node, Animation * animation, double tick, glm::mat4 parent_transform);
+	void UpdateTransformsHierarchy(Node & node, Animation & animation, double tick, glm::mat4 parent_transform);
 };

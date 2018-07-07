@@ -22,12 +22,17 @@ bool Model::IsAnimated()
 void Model::AddAnimation(Animation * animation)
 {
 	is_animated = true;
-	animations[animation->GetName()] = animation;
+	animation_mapping[animation->GetName()] = animations.size();
+	animations.emplace_back(std::move(animation));
 }
 
 void Model::SetAnimation(std::string name)
 {
-	current_animation = name;
+	auto found = animation_mapping.find(name);
+
+	assert(found != animation_mapping.end());
+
+	current_animation = found->second;
 }
 
 void Model::SetShader(Shader * shader)
@@ -124,13 +129,13 @@ glm::mat4 CalcScaling(AnimChannel& channel, double tick) {
 	return glm::scale(identity, interpolated);
 }
 
-void Model::UpdateTransformsHierarchy(Node& node, Animation* animation, double tick, glm::mat4 parent_transform)
+void Model::UpdateTransformsHierarchy(Node& node, Animation& animation, double tick, glm::mat4 parent_transform)
 {
 	glm::mat4 node_transform = node.GetTransform();
 
-	if (animation->HasChannel(node.GetName()))
+	if (animation.HasChannel(node.GetName()))
 	{
-		AnimChannel& channel = animation->GetChannel(node.GetName());
+		AnimChannel& channel = animation.GetChannel(node.GetName());
 
 		glm::mat4 translation = CalcPosition(channel, tick);
 		glm::mat4 rotation = CalcRotation(channel, tick);
@@ -157,15 +162,11 @@ void Model::Update(double delta)
 		return;
 	}
 
-	if (animations.find(current_animation) == animations.end()) {
-		return;
-	}
-
-	Animation* animation = animations[current_animation];
+	Animation& animation = *(animations[current_animation]);
 
 	current_time += delta;
-	double current_tick = current_time * animation->GetTickRate();
-	if (current_tick > animation->GetDuration()) {
+	double current_tick = current_time * animation.GetTickRate();
+	if (current_tick > animation.GetDuration()) {
 		current_time = 0;
 		current_tick = 0;
 	}

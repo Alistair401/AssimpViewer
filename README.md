@@ -4,7 +4,7 @@ I will update this readme as a kind of blog to show progress and maybe help othe
 ## Starting the project - 6th December 2017
 
 I have 2 main goals to achieve with this project:
-1) show that I understand and can program physics in a 3D game engine
+1) show that I understand a 3D game engine
 2) show that I have a good enough understanding of C++ and rendering methods to use OpenGL without a higher-level wrapper library
 
 Rather than coming up with the idea for a game, and then programming the engine for it, I will program the engine, and then come up with a simple game to wrap it all together.
@@ -51,3 +51,42 @@ https://gamedev.stackexchange.com/q/26382 \
 https://sourceforge.net/p/assimp/discussion/817654/thread/a7bf155b/#6168
 
 University exams are up next, so there likely won't be any progress past animation until June.
+
+## Architecture - 7th July 2018
+
+Getting skeletal animation working felt like a triumph. However, currently the architecture of the application is a mess of tightly coupled and monolithic classes. 
+
+My current goals is to decouple functionality from data in the following places:
+
+#### Rendering
+Rendering functionality and OpenGL calls should not be inside the `Model` class. A rendering function should look a bit like this:
+
+```c++
+void Render(Model m);
+```
+
+This separates the rendering implementation from the model implementation, meaning if I were to switch out OpenGL with some other API, it wouldn't require any changes to the `Model` class. 
+
+#### Skeletal Animation
+
+In it's current form, the application treats all models as having a skeleton and animations. Obviously this shouldn't be the case.
+
+Different types of model should extend a base `Model` class. This allows the renderer to ignore what type of model it is rendering. It also means that an animation system doesn't have to keep checking if a model has a skeleton and animations or not, it can act on just the models that matter.
+
+#### Pose Calculation
+
+Currently, all skeletal animation is done from within the `Model` class. This means that any change to the implementation of a `Model` is likely to affect how poses are calculated. 
+
+Decoupling this functionality from the model would require something along the lines of:
+
+```c++
+Pose EvaluateAnimation(Animation a, Time t);
+```
+
+This is challenging as it requires some pretty integral changes to the way animations and bones are handled. Once implemented, this would help enourmously in writing a more extensible animation system.
+
+I plan to allow for animation blending which is only possible if animation is abstracted in this way so that functions like this can then be implemented:
+
+```c++
+Pose Blend(Pose a, Pose b, float blend_factor);
+```

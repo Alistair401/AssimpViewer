@@ -107,14 +107,27 @@ void AnimatedModel::Update(double delta)
 {
 	Animation& animation = *(animations[current_animation]);
 
-	current_time += delta;
-	double current_tick = current_time * animation.GetTickRate();
-	if (current_tick > animation.GetDuration()) {
-		current_time = 0;
-		current_tick = 0;
-	}
+	time += delta;
 
-	UpdateTransformsHierarchy(*root, animation, current_tick, glm::mat4(1.0f));
+	double tick = time * animation.GetTickRate();
+
+	tick = std::fmod(tick, animation.GetDuration());
+
+	UpdateTransformsHierarchy(*root, animation, tick, glm::mat4(1.0f));
+}
+
+size_t AnimatedModel::AddBone(Bone * bone)
+{
+	size_t bone_index = bones.size();
+	bones.emplace_back(std::move(bone));
+	bone_mapping[bone->name] = bone_index;
+	return bone_index;
+}
+
+Bone & AnimatedModel::GetBone(size_t index)
+{
+	assert(bones.size() > index);
+	return *(bones[index]);
 }
 
 void AnimatedModel::UpdateTransformsHierarchy(Node& node, Animation& animation, double tick, glm::mat4 parent_transform)
@@ -134,17 +147,13 @@ void AnimatedModel::UpdateTransformsHierarchy(Node& node, Animation& animation, 
 
 	glm::mat4 global_transform = parent_transform * node_transform;
 
-	if (bones.find(node.GetName()) != bones.end()) {
-		Bone* bone = bones[node.GetName()];
-		bone->transform = inverse_root_transform * global_transform * bone->offset;
+	auto found = bone_mapping.find(node.GetName());
+	if (found != bone_mapping.end()) {
+		Bone& bone = *(bones[found->second]);
+		bone.transform = inverse_root_transform * global_transform * bone.offset;
 	}
 
 	node.ForEachChild([&](Node& child) {
 		UpdateTransformsHierarchy(child, animation, tick, global_transform);
 	});
-}
-
-void AnimatedModel::RegisterBone(Bone * bone)
-{
-	bones[bone->name] = bone;
 }

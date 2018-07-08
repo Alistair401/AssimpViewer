@@ -72,7 +72,6 @@ void ProcessBones(AnimatedModel* model, Mesh* mesh, aiMesh* ai_mesh) {
 		aiBone* ai_bone = ai_mesh->mBones[i];
 
 		Bone* bone = new Bone{ ai_bone->mName.C_Str(), AIToGLMMat4(ai_bone->mOffsetMatrix) };
-		mesh->AddBone(bone);
 
 		for (size_t j = 0; j < ai_bone->mNumWeights; j++)
 		{
@@ -86,7 +85,8 @@ void ProcessBones(AnimatedModel* model, Mesh* mesh, aiMesh* ai_mesh) {
 			}
 		}
 
-		model->RegisterBone(bone);
+		size_t bone_index = model->AddBone(bone);
+		mesh->AddBone(bone_index);
 	}
 }
 

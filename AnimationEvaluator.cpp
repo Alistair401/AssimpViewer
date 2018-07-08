@@ -90,7 +90,5 @@
 
 void AnimationEvaluator::Evaluate(Animation & animation, double time)
 {
-	double tick = time * animation.GetTickRate();
-	
-	tick = std::fmod(tick, animation.GetDuration());
+
 }

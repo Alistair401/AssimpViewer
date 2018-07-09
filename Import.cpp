@@ -110,7 +110,7 @@ ModelNode* ExploreHeirarchy(AnimatedModel* model, aiNode* ai_node, const aiScene
 	glm::mat4 relative_transform = AIToGLMMat4(ai_node->mTransformation);
 	glm::mat4 node_transform = parent_transform * relative_transform;
 
-	node->SetTransform(relative_transform);
+	node->transform = relative_transform;
 
 	for (unsigned int mesh_index = 0; mesh_index < ai_node->mNumMeshes; mesh_index++)
 	{
@@ -176,11 +176,9 @@ AnimatedModel* ProcessScene(const aiScene* ai_scene) {
 
 	ProcessAnimations(model, ai_scene);
 
-	ModelNode* root_node = ExploreHeirarchy(model, ai_scene->mRootNode, ai_scene, glm::mat4(1.0f));
+	model->root = std::unique_ptr<ModelNode>(ExploreHeirarchy(model, ai_scene->mRootNode, ai_scene, glm::mat4(1.0f)));
 
-	model->SetRoot(root_node);
-
-	model->SetInverseRootTransform(AIToGLMMat4(ai_scene->mRootNode->mTransformation));
+	model->inverse_root_transform = AIToGLMMat4(ai_scene->mRootNode->mTransformation);
 
 	return model;
 }

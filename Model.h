@@ -16,16 +16,11 @@ struct Key {
 class Model
 {
 public:
-	void SetRoot(ModelNode* root);
-	ModelNode& GetRoot();
-	void SetShader(Shader* shader);
-	Shader& GetShader();
-	void SetInverseRootTransform(glm::mat4 transform);
+	std::unique_ptr<ModelNode> root;
+	Shader* shader = nullptr;
+	glm::mat4 inverse_root_transform;
 	void SetBuffered(bool buffered);
 	bool IsBuffered();
 protected:
-	Shader * shader = nullptr;
 	bool buffered = false;
-	std::unique_ptr<ModelNode> root;
-	glm::mat4 inverse_root_transform;
 };

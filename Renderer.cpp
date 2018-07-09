@@ -11,9 +11,9 @@ void GenBufferHierarchy(Model& model, ModelNode& node) {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.ibo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.NumIndices() * sizeof(GLuint), &mesh.indices[0], GL_STATIC_DRAW);
 
-		GLuint ssbo_index = glGetProgramResourceIndex(model.GetShader().ID(), GL_SHADER_STORAGE_BLOCK, "bone_buffer");
+		GLuint ssbo_index = glGetProgramResourceIndex(model.shader->ID(), GL_SHADER_STORAGE_BLOCK, "bone_buffer");
 		glGenBuffers(1, &mesh.bbo);
-		glShaderStorageBlockBinding(model.GetShader().ID(), ssbo_index, mesh.bbo_binding);
+		glShaderStorageBlockBinding(model.shader->ID(), ssbo_index, mesh.bbo_binding);
 	});
 
 	node.ForEachChild([&](ModelNode& child) {
@@ -67,10 +67,10 @@ void RenderHierarchy(AnimatedModel& model, ModelNode& node) {
 
 void Renderer::Render(AnimatedModel& model)
 {
-	model.GetShader().Use();
+	model.shader->Use();
 	if (!model.IsBuffered()) {
-		GenBufferHierarchy(model, model.GetRoot());
+		GenBufferHierarchy(model, *(model.root));
 		model.SetBuffered(true);
 	}
-	RenderHierarchy(model, model.GetRoot());
+	RenderHierarchy(model, *(model.root));
 }

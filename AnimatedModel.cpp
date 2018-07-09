@@ -132,22 +132,20 @@ Bone & AnimatedModel::GetBone(size_t index)
 
 void AnimatedModel::UpdateTransformsHierarchy(ModelNode& node, Animation& animation, double tick, glm::mat4 parent_transform)
 {
-	glm::mat4 node_transform = node.GetTransform();
-
-	if (animation.HasChannel(node.GetName()))
+	if (animation.HasChannel(node.name))
 	{
-		AnimChannel& channel = animation.GetChannel(node.GetName());
+		AnimChannel& channel = animation.GetChannel(node.name);
 
 		glm::mat4 translation = CalcPosition(channel, tick);
 		glm::mat4 rotation = CalcRotation(channel, tick);
 		glm::mat4 scaling = CalcScaling(channel, tick);
 
-		node_transform = translation * rotation * scaling;
+		node.transform = translation * rotation * scaling;
 	}
 
-	glm::mat4 global_transform = parent_transform * node_transform;
+	glm::mat4 global_transform = parent_transform * node.transform;
 
-	auto found = bone_mapping.find(node.GetName());
+	auto found = bone_mapping.find(node.name);
 	if (found != bone_mapping.end()) {
 		Bone& bone = *(bones[found->second]);
 		bone.transform = inverse_root_transform * global_transform * bone.offset;

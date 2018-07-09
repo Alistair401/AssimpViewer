@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Model.h"
+#include "AnimationEvaluator.h"
 
 class AnimatedModel : public Model
 {
@@ -18,6 +20,5 @@ private:
 	std::unordered_map<std::string, size_t> bone_mapping;
 	std::vector<std::unique_ptr<Bone>> bones;
 
-	void UpdateTransformsHierarchy(ModelNode & node, Animation & animation, double tick, glm::mat4 parent_transform);
+	void UpdateTransformsHierarchy(ModelNode & node, Pose pose, glm::mat4 parent_transform);
 };
-

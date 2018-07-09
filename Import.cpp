@@ -140,7 +140,7 @@ void ProcessAnimations(AnimatedModel* model, const aiScene* ai_scene) {
 			aiNodeAnim* ai_channel = ai_animation->mChannels[j];
 
 			AnimChannel* channel = new AnimChannel();
-			channel->SetName(ai_channel->mNodeName.C_Str());
+			channel->name = ai_channel->mNodeName.C_Str();
 
 			for (size_t k = 0; k < ai_channel->mNumPositionKeys; k++)
 			{

@@ -18,7 +18,7 @@ double Animation::GetTickRate()
 
 void Animation::AddChannel(AnimChannel * channel)
 {
-	channel_mapping[channel->GetName()] = channels.size();
+	channel_mapping[channel->name] = channels.size();
 	channels.emplace_back(std::move(channel));
 }
 
@@ -45,6 +45,13 @@ void Animation::SetDuration(double ticks)
 double Animation::GetDuration()
 {
 	return duration;
+}
+
+void Animation::ForEachChannel(const std::function<void(AnimChannel&)>& f)
+{
+	for (auto&& channel : channels) {
+		f(*channel);
+	}
 }
 
 std::string Animation::GetName()

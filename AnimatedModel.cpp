@@ -5,89 +5,6 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\quaternion.hpp>
 
-glm::vec3 Interpolate(glm::vec3 prev, glm::vec3 next, float interpolant) {
-	return glm::mix(prev, next, interpolant);
-}
-
-glm::quat Interpolate(glm::quat prev, glm::quat next, float interpolant) {
-	return glm::mix(prev, next, interpolant);
-}
-
-glm::mat4 CalcPosition(AnimChannel& channel, double tick) {
-	glm::mat4 identity = glm::mat4(1.0);
-	if (channel.NumPositionKeys() == 0) {
-		return identity;
-	}
-	if (channel.NumPositionKeys() == 1) {
-		return glm::translate(identity, channel.GetPositionKey(0).value);
-	}
-
-	size_t prev_index = channel.GetPositionKeyIndex(tick);
-	VectorKey prev = channel.GetPositionKey(prev_index);
-	VectorKey next = prev;
-	if (prev_index + 1 < channel.NumPositionKeys()) {
-		next = channel.GetPositionKey(prev_index + 1);
-	}
-
-	double delta = next.time - prev.time;
-	double interpolant = (tick - prev.time) / delta;
-
-	interpolant = glm::clamp(interpolant, 0.0, 1.0);
-	glm::vec3 interpolated = Interpolate(prev.value, next.value, static_cast<float>(interpolant));
-
-	return glm::translate(identity, interpolated);
-}
-
-glm::mat4 CalcRotation(AnimChannel& channel, double tick) {
-	glm::mat4 identity = glm::mat4(1.0);
-	if (channel.NumRotationKeys() == 0) {
-		return identity;
-	}
-	if (channel.NumRotationKeys() == 1) {
-		return glm::mat4_cast(channel.GetRotationKey(0).value);
-	}
-
-	size_t prev_index = channel.GetRotationKeyIndex(tick);
-	QuaternionKey prev = channel.GetRotationKey(prev_index);
-	QuaternionKey next = prev;
-	if (prev_index + 1 < channel.NumRotationKeys()) {
-		next = channel.GetRotationKey(prev_index + 1);
-	}
-
-	double delta = next.time - prev.time;
-	double interpolant = (tick - prev.time) / delta;
-
-	interpolant = glm::clamp(interpolant, 0.0, 1.0);
-	glm::quat interpolated = Interpolate(prev.value, next.value, static_cast<float>(interpolant));
-
-	return glm::mat4_cast(interpolated);
-}
-
-glm::mat4 CalcScaling(AnimChannel& channel, double tick) {
-	glm::mat4 identity = glm::mat4(1.0);
-	if (channel.NumScalingKeys() == 0) {
-		return identity;
-	}
-	if (channel.NumScalingKeys() == 1) {
-		return glm::scale(identity, channel.GetScalingKey(0).value);
-	}
-
-	size_t prev_index = channel.GetScalingKeyIndex(tick);
-	VectorKey prev = channel.GetScalingKey(prev_index);
-	VectorKey next = prev;
-	if (prev_index + 1 < channel.NumScalingKeys()) {
-		next = channel.GetScalingKey(prev_index + 1);
-	}
-
-	double delta = next.time - prev.time;
-	double interpolant = (tick - prev.time) / delta;
-
-	interpolant = glm::clamp(interpolant, 0.0, 1.0);
-	glm::vec3 interpolated = Interpolate(prev.value, next.value, static_cast<float>(interpolant));
-
-	return glm::scale(identity, interpolated);
-}
-
 void AnimatedModel::AddAnimation(Animation * animation)
 {
 	animation_mapping[animation->GetName()] = animations.size();
@@ -109,11 +26,9 @@ void AnimatedModel::Update(double delta)
 
 	time += delta;
 
-	double tick = time * animation.GetTickRate();
+	std::unordered_map<std::string, glm::mat4> pose = AnimationEvaluator::Evaluate(animation, time);
 
-	tick = std::fmod(tick, animation.GetDuration());
-
-	UpdateTransformsHierarchy(*root, animation, tick, glm::mat4(1.0f));
+	UpdateTransformsHierarchy(*root, pose, glm::mat4(1.0f));
 }
 
 size_t AnimatedModel::AddBone(Bone * bone)
@@ -130,28 +45,23 @@ Bone & AnimatedModel::GetBone(size_t index)
 	return *(bones[index]);
 }
 
-void AnimatedModel::UpdateTransformsHierarchy(ModelNode& node, Animation& animation, double tick, glm::mat4 parent_transform)
+void AnimatedModel::UpdateTransformsHierarchy(ModelNode& node, Pose pose, glm::mat4 parent_transform)
 {
-	if (animation.HasChannel(node.name))
+	auto node_found = pose.find(node.name);
+	if (node_found != pose.end())
 	{
-		AnimChannel& channel = animation.GetChannel(node.name);
-
-		glm::mat4 translation = CalcPosition(channel, tick);
-		glm::mat4 rotation = CalcRotation(channel, tick);
-		glm::mat4 scaling = CalcScaling(channel, tick);
-
-		node.transform = translation * rotation * scaling;
+		node.transform = node_found->second;
 	}
 
 	glm::mat4 global_transform = parent_transform * node.transform;
 
-	auto found = bone_mapping.find(node.name);
-	if (found != bone_mapping.end()) {
-		Bone& bone = *(bones[found->second]);
+	auto bone_found = bone_mapping.find(node.name);
+	if (bone_found != bone_mapping.end()) {
+		Bone& bone = *(bones[bone_found->second]);
 		bone.transform = inverse_root_transform * global_transform * bone.offset;
 	}
 
 	node.ForEachChild([&](ModelNode& child) {
-		UpdateTransformsHierarchy(child, animation, tick, global_transform);
+		UpdateTransformsHierarchy(child, pose, global_transform);
 	});
 }

@@ -162,7 +162,6 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TreeNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimatedModel.cpp" />
@@ -174,7 +173,7 @@
     <ClCompile Include="Import.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
-    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="ModelNode.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stdafx.cpp">

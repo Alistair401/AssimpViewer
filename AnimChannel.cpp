@@ -29,16 +29,6 @@ struct _CompareKeys {
 	}
 } CompareKeys;
 
-void AnimChannel::SetName(std::string name)
-{
-	this->name = name;
-}
-
-std::string AnimChannel::GetName()
-{
-	return name;
-}
-
 void AnimChannel::AddPositionKey(VectorKey key)
 {
 	position_keys.push_back(key);

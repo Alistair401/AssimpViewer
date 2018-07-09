@@ -16,8 +16,7 @@ struct QuaternionKey {
 class AnimChannel
 {
 public:
-	void SetName(std::string name);
-	std::string GetName();
+	std::string name;
 	void AddPositionKey(VectorKey key);
 	void AddRotationKey(QuaternionKey key);
 	void AddScalingKey(VectorKey key);
@@ -31,7 +30,6 @@ public:
 	size_t GetRotationKeyIndex(double time);
 	size_t GetScalingKeyIndex(double time);
 private:
-	std::string name;
 	std::vector<VectorKey> scaling_keys;
 	std::vector<QuaternionKey> rotation_keys;
 	std::vector<VectorKey> position_keys;

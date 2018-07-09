@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <functional>
 
 class Animation
 {
@@ -16,6 +17,7 @@ public:
 	AnimChannel& GetChannel(std::string name);
 	void SetDuration(double ticks);
 	double GetDuration();
+	void ForEachChannel(const std::function<void(AnimChannel&)>& f);
 private:
 	std::string name;
 	double tick_rate;

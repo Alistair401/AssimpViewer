@@ -2,12 +2,12 @@
 
 #include "Model.h"
 
-void Model::SetRoot(Node * root)
+void Model::SetRoot(ModelNode * root)
 {
-	this->root = std::unique_ptr<Node>(std::move(root));
+	this->root = std::unique_ptr<ModelNode>(std::move(root));
 }
 
-Node & Model::GetRoot()
+ModelNode & Model::GetRoot()
 {
 	return *root;
 }

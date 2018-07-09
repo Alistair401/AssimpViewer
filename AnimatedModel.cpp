@@ -130,7 +130,7 @@ Bone & AnimatedModel::GetBone(size_t index)
 	return *(bones[index]);
 }
 
-void AnimatedModel::UpdateTransformsHierarchy(Node& node, Animation& animation, double tick, glm::mat4 parent_transform)
+void AnimatedModel::UpdateTransformsHierarchy(ModelNode& node, Animation& animation, double tick, glm::mat4 parent_transform)
 {
 	glm::mat4 node_transform = node.GetTransform();
 
@@ -153,7 +153,7 @@ void AnimatedModel::UpdateTransformsHierarchy(Node& node, Animation& animation, 
 		bone.transform = inverse_root_transform * global_transform * bone.offset;
 	}
 
-	node.ForEachChild([&](Node& child) {
+	node.ForEachChild([&](ModelNode& child) {
 		UpdateTransformsHierarchy(child, animation, tick, global_transform);
 	});
 }

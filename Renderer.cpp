@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Renderer.h"
 
-void GenBufferHierarchy(Model& model, Node& node) {
+void GenBufferHierarchy(Model& model, ModelNode& node) {
 	node.ForEachMesh([&](Mesh& mesh) {
 		glGenBuffers(1, &mesh.vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
@@ -16,12 +16,12 @@ void GenBufferHierarchy(Model& model, Node& node) {
 		glShaderStorageBlockBinding(model.GetShader().ID(), ssbo_index, mesh.bbo_binding);
 	});
 
-	node.ForEachChild([&](Node& child) {
+	node.ForEachChild([&](ModelNode& child) {
 		GenBufferHierarchy(model, child);
 	});
 }
 
-void RenderHierarchy(AnimatedModel& model, Node& node) {
+void RenderHierarchy(AnimatedModel& model, ModelNode& node) {
 	node.ForEachMesh([&](Mesh& mesh) {
 		std::vector<glm::mat4> bone_tranforms;
 		for (size_t bone_index : mesh.bones) {
@@ -60,7 +60,7 @@ void RenderHierarchy(AnimatedModel& model, Node& node) {
 		glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(mesh.NumIndices()), GL_UNSIGNED_INT, 0);
 	});
 
-	node.ForEachChild([&](Node& child) {
+	node.ForEachChild([&](ModelNode& child) {
 		RenderHierarchy(model, child);
 	});
 }

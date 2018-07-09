@@ -104,8 +104,8 @@ Mesh* ProcessMesh(AnimatedModel* model, aiMesh* ai_mesh) {
 	return mesh;
 }
 
-Node* ExploreHeirarchy(AnimatedModel* model, aiNode* ai_node, const aiScene* ai_scene, glm::mat4 parent_transform) {
-	Node* node = new Node(ai_node->mName.C_Str());
+ModelNode* ExploreHeirarchy(AnimatedModel* model, aiNode* ai_node, const aiScene* ai_scene, glm::mat4 parent_transform) {
+	ModelNode* node = new ModelNode(ai_node->mName.C_Str());
 
 	glm::mat4 relative_transform = AIToGLMMat4(ai_node->mTransformation);
 	glm::mat4 node_transform = parent_transform * relative_transform;
@@ -176,7 +176,7 @@ AnimatedModel* ProcessScene(const aiScene* ai_scene) {
 
 	ProcessAnimations(model, ai_scene);
 
-	Node* root_node = ExploreHeirarchy(model, ai_scene->mRootNode, ai_scene, glm::mat4(1.0f));
+	ModelNode* root_node = ExploreHeirarchy(model, ai_scene->mRootNode, ai_scene, glm::mat4(1.0f));
 
 	model->SetRoot(root_node);
 

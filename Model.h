@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Shader.h"
-#include "Node.h"
+#include "ModelNode.h"
 #include "Animation.h"
 
 #include <unordered_map>
@@ -16,8 +16,8 @@ struct Key {
 class Model
 {
 public:
-	void SetRoot(Node* root);
-	Node& GetRoot();
+	void SetRoot(ModelNode* root);
+	ModelNode& GetRoot();
 	void SetShader(Shader* shader);
 	Shader& GetShader();
 	void SetInverseRootTransform(glm::mat4 transform);
@@ -26,6 +26,6 @@ public:
 protected:
 	Shader * shader = nullptr;
 	bool buffered = false;
-	std::unique_ptr<Node> root;
+	std::unique_ptr<ModelNode> root;
 	glm::mat4 inverse_root_transform;
 };

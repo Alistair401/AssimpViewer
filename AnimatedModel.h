@@ -9,6 +9,7 @@ public:
 	void AddAnimation(Animation* animation);
 	void SetAnimation(std::string name);
 	void Update(double delta);
+
 	size_t AddBone(Bone* bone);
 	Bone& GetBone(size_t index);
 private:

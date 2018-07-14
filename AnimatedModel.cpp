@@ -36,6 +36,7 @@ size_t AnimatedModel::AddBone(Bone * bone)
 	size_t bone_index = bones.size();
 	bones.push_back(bone);
 	bone_mapping[bone->name] = bone_index;
+	node_mapping[bone->name]->bone = bone;
 	return bone_index;
 }
 
@@ -55,10 +56,8 @@ void AnimatedModel::UpdateTransformsHierarchy(ModelNode& node, Pose& pose, glm::
 
 	glm::mat4 global_transform = parent_transform * node.transform;
 
-	auto bone_found = bone_mapping.find(node.name);
-	if (bone_found != bone_mapping.end()) {
-		Bone& bone = *(bones[bone_found->second]);
-		bone.transform = inverse_root_transform * global_transform * bone.offset;
+	if (node.bone != nullptr) {
+		node.bone->transform = inverse_root_transform * global_transform * node.bone->offset;
 	}
 
 	node.ForEachChild([&](ModelNode& child) {

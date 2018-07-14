@@ -11,6 +11,7 @@ public:
 	ModelNode(std::string name);
 	glm::mat4 transform;
 	std::string name;
+	Bone* bone = nullptr;
 
 	void AddChild(ModelNode* child);
 	void ForEachChild(const std::function<void(ModelNode&)>& f);
@@ -18,6 +19,5 @@ public:
 	void ForEachMesh(const std::function<void(Mesh&)>& f);
 private:
 	std::vector<std::unique_ptr<Mesh>> meshes;
-	Bone* bone = nullptr;
-	std::vector<std::unique_ptr<ModelNode>> children;
+	std::vector<ModelNode*> children;
 };

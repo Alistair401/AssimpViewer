@@ -21,7 +21,7 @@ void ModelNode::ForEachMesh(const std::function<void(Mesh&)>& f)
 
 void ModelNode::AddChild(ModelNode * child)
 {
-	children.emplace_back(std::move(child));
+	children.push_back(child);
 }
 
 void ModelNode::ForEachChild(const std::function<void(ModelNode&)>& f)

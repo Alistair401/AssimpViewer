@@ -34,7 +34,7 @@ void AnimatedModel::Update(double delta)
 size_t AnimatedModel::AddBone(Bone * bone)
 {
 	size_t bone_index = bones.size();
-	bones.emplace_back(std::move(bone));
+	bones.push_back(bone);
 	bone_mapping[bone->name] = bone_index;
 	return bone_index;
 }
@@ -45,7 +45,7 @@ Bone & AnimatedModel::GetBone(size_t index)
 	return *(bones[index]);
 }
 
-void AnimatedModel::UpdateTransformsHierarchy(ModelNode& node, Pose pose, glm::mat4 parent_transform)
+void AnimatedModel::UpdateTransformsHierarchy(ModelNode& node, Pose& pose, glm::mat4 parent_transform)
 {
 	auto node_found = pose.find(node.name);
 	if (node_found != pose.end())

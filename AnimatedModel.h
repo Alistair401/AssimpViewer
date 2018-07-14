@@ -18,7 +18,7 @@ private:
 	std::vector<std::unique_ptr<Animation>> animations;
 
 	std::unordered_map<std::string, size_t> bone_mapping;
-	std::vector<std::unique_ptr<Bone>> bones;
+	std::vector<Bone*> bones;
 
-	void UpdateTransformsHierarchy(ModelNode & node, Pose pose, glm::mat4 parent_transform);
+	void UpdateTransformsHierarchy(ModelNode & node, Pose& pose, glm::mat4 parent_transform);
 };

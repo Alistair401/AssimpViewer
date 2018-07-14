@@ -18,5 +18,6 @@ public:
 	void ForEachMesh(const std::function<void(Mesh&)>& f);
 private:
 	std::vector<std::unique_ptr<Mesh>> meshes;
+	Bone* bone = nullptr;
 	std::vector<std::unique_ptr<ModelNode>> children;
 };

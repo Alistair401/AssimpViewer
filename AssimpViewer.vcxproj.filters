@@ -54,9 +54,6 @@
     <ClInclude Include="Renderer.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Animator.h">
-      <Filter>Header Files\Model</Filter>
-    </ClInclude>
     <ClInclude Include="AnimationEvaluator.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
@@ -94,9 +91,6 @@
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Animator.cpp">
-      <Filter>Source Files\Model</Filter>
     </ClCompile>
     <ClCompile Include="AnimationEvaluator.cpp">
       <Filter>Source Files\Model</Filter>

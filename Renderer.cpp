@@ -24,9 +24,8 @@ void GenBufferHierarchy(Model& model, ModelNode& node) {
 void RenderHierarchy(AnimatedModel& model, ModelNode& node) {
 	node.ForEachMesh([&](Mesh& mesh) {
 		std::vector<glm::mat4> bone_tranforms;
-		for (size_t bone_index : mesh.bones) {
-			Bone& bone = model.GetBone(bone_index);
-			bone_tranforms.push_back(bone.transform);
+		for (Bone* bone : mesh.bones) {
+			bone_tranforms.push_back(bone->transform);
 		}
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh.bbo);

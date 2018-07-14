@@ -85,8 +85,8 @@ void ProcessBones(AnimatedModel* model, Mesh* mesh, aiMesh* ai_mesh) {
 			}
 		}
 
-		size_t bone_index = model->AddBone(bone);
-		mesh->AddBone(bone_index);
+		model->AddBone(bone);
+		mesh->AddBone(bone);
 	}
 }
 

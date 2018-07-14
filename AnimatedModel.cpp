@@ -31,19 +31,9 @@ void AnimatedModel::Update(double delta)
 	UpdateTransformsHierarchy(*root, pose, glm::mat4(1.0f));
 }
 
-size_t AnimatedModel::AddBone(Bone * bone)
+void AnimatedModel::AddBone(Bone * bone)
 {
-	size_t bone_index = bones.size();
-	bones.push_back(bone);
-	bone_mapping[bone->name] = bone_index;
 	node_mapping[bone->name]->bone = bone;
-	return bone_index;
-}
-
-Bone & AnimatedModel::GetBone(size_t index)
-{
-	assert(bones.size() > index);
-	return *(bones[index]);
 }
 
 void AnimatedModel::UpdateTransformsHierarchy(ModelNode& node, Pose& pose, glm::mat4 parent_transform)

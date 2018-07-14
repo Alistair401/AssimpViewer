@@ -17,9 +17,9 @@ void Mesh::AddWeight(unsigned int vertex_index, unsigned int bone_index, GLuint 
 	vertices[vertex_index].bone_weights[bone_index] = weight;
 }
 
-void Mesh::AddBone(size_t index)
+void Mesh::AddBone(Bone* bone)
 {
-	bones.push_back(index);
+	bones.push_back(bone);
 }
 
 size_t Mesh::NumVertices()

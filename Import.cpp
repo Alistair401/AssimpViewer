@@ -71,7 +71,7 @@ void ProcessBones(AnimatedModel* model, Mesh* mesh, aiMesh* ai_mesh) {
 	{
 		aiBone* ai_bone = ai_mesh->mBones[i];
 
-		Bone* bone = new Bone{ ai_bone->mName.C_Str(), AIToGLMMat4(ai_bone->mOffsetMatrix) };
+		std::shared_ptr<Bone> bone{ new Bone{ ai_bone->mName.C_Str(), AIToGLMMat4(ai_bone->mOffsetMatrix) } };
 
 		for (size_t j = 0; j < ai_bone->mNumWeights; j++)
 		{
@@ -86,13 +86,13 @@ void ProcessBones(AnimatedModel* model, Mesh* mesh, aiMesh* ai_mesh) {
 		}
 
 		model->AddBone(bone);
-		mesh->AddBone(bone);
+		mesh->bones.push_back(bone);
 	}
 }
 
 Mesh* ProcessMesh(AnimatedModel* model, aiMesh* ai_mesh) {
 	Mesh* mesh = new Mesh();
-	
+
 	ProcessVertices(mesh, ai_mesh);
 
 	ProcessFaces(mesh, ai_mesh);
@@ -104,8 +104,8 @@ Mesh* ProcessMesh(AnimatedModel* model, aiMesh* ai_mesh) {
 	return mesh;
 }
 
-ModelNode* ExploreHeirarchy(AnimatedModel* model, aiNode* ai_node, const aiScene* ai_scene, glm::mat4 parent_transform) {
-	ModelNode* node = new ModelNode(ai_node->mName.C_Str());
+Node* ExploreHeirarchy(AnimatedModel* model, aiNode* ai_node, const aiScene* ai_scene, glm::mat4 parent_transform) {
+	Node* node = new Node(ai_node->mName.C_Str());
 
 	glm::mat4 relative_transform = AIToGLMMat4(ai_node->mTransformation);
 	glm::mat4 node_transform = parent_transform * relative_transform;

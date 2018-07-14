@@ -60,7 +60,7 @@
     <ClInclude Include="AnimatedModel.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
-    <ClInclude Include="ModelNode.h">
+    <ClInclude Include="Node.h">
       <Filter>Header Files\Model</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,7 +98,7 @@
     <ClCompile Include="AnimatedModel.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
-    <ClCompile Include="ModelNode.cpp">
+    <ClCompile Include="Node.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
   </ItemGroup>

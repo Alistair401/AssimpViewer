@@ -2,7 +2,7 @@
 
 #include "Model.h"
 
-void Model::RegisterNode(ModelNode * node)
+void Model::RegisterNode(Node * node)
 {
 	node_mapping[node->name] = node;
 }

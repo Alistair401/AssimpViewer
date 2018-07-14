@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Renderer.h"
 
-void GenBufferHierarchy(Model& model, ModelNode& node) {
+void GenBufferHierarchy(Model& model, Node& node) {
 	node.ForEachMesh([&](Mesh& mesh) {
 		glGenBuffers(1, &mesh.vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo);
@@ -16,15 +16,15 @@ void GenBufferHierarchy(Model& model, ModelNode& node) {
 		glShaderStorageBlockBinding(model.shader->ID(), ssbo_index, mesh.bbo_binding);
 	});
 
-	node.ForEachChild([&](ModelNode& child) {
+	node.ForEachChild([&](Node& child) {
 		GenBufferHierarchy(model, child);
 	});
 }
 
-void RenderHierarchy(AnimatedModel& model, ModelNode& node) {
+void RenderHierarchy(AnimatedModel& model, Node& node) {
 	node.ForEachMesh([&](Mesh& mesh) {
 		std::vector<glm::mat4> bone_tranforms;
-		for (Bone* bone : mesh.bones) {
+		for (auto&& bone : mesh.bones) {
 			bone_tranforms.push_back(bone->transform);
 		}
 
@@ -59,7 +59,7 @@ void RenderHierarchy(AnimatedModel& model, ModelNode& node) {
 		glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(mesh.NumIndices()), GL_UNSIGNED_INT, 0);
 	});
 
-	node.ForEachChild([&](ModelNode& child) {
+	node.ForEachChild([&](Node& child) {
 		RenderHierarchy(model, child);
 	});
 }

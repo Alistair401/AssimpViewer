@@ -24,13 +24,12 @@ public:
 	void AddVertex(MeshVertex& vertex);
 	void AddIndex(GLuint index);
 	void AddWeight(unsigned int vertex_index, unsigned int bone_index, GLuint bone_id, GLfloat weight);
-	void AddBone(Bone* bone);
 	size_t NumVertices();
 	size_t NumBones();
 	size_t NumIndices();
 	std::vector<MeshVertex> vertices;
 	std::vector<GLuint> indices;
-	std::vector<Bone*> bones;
+	std::vector<std::shared_ptr<Bone>> bones;
 	GLuint vbo;
 	GLuint ibo;
 	GLuint bbo;

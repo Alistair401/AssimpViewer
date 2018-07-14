@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Shader.h"
-#include "ModelNode.h"
+#include "Node.h"
 #include "Animation.h"
 
 #include <unordered_map>
@@ -16,14 +16,14 @@ struct Key {
 class Model
 {
 public:
-	ModelNode* root;
-	void RegisterNode(ModelNode* node);
+	Node* root;
+	void RegisterNode(Node* node);
 
 	Shader* shader = nullptr;
 	glm::mat4 inverse_root_transform;
 	void SetBuffered(bool buffered);
 	bool IsBuffered();
 protected:
-	std::unordered_map<std::string, ModelNode*> node_mapping;
+	std::unordered_map<std::string, Node*> node_mapping;
 	bool buffered = false;
 };

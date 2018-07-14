@@ -5,19 +5,19 @@
 #include <memory>
 #include <functional>
 
-class ModelNode
+class Node
 {
 public:
-	ModelNode(std::string name);
+	Node(std::string name);
 	glm::mat4 transform;
 	std::string name;
-	Bone* bone = nullptr;
+	std::shared_ptr<Bone> bone = nullptr;
 
-	void AddChild(ModelNode* child);
-	void ForEachChild(const std::function<void(ModelNode&)>& f);
+	void AddChild(Node* child);
+	void ForEachChild(const std::function<void(Node&)>& f);
 	void AddMesh(Mesh* mesh);
 	void ForEachMesh(const std::function<void(Mesh&)>& f);
 private:
 	std::vector<std::unique_ptr<Mesh>> meshes;
-	std::vector<ModelNode*> children;
+	std::vector<Node*> children;
 };

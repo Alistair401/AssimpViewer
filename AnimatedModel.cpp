@@ -31,12 +31,13 @@ void AnimatedModel::Update(double delta)
 	UpdateTransformsHierarchy(*root, pose, glm::mat4(1.0f));
 }
 
-void AnimatedModel::AddBone(Bone * bone)
+void AnimatedModel::AddBone(std::shared_ptr<Bone> bone)
 {
 	node_mapping[bone->name]->bone = bone;
+
 }
 
-void AnimatedModel::UpdateTransformsHierarchy(ModelNode& node, Pose& pose, glm::mat4 parent_transform)
+void AnimatedModel::UpdateTransformsHierarchy(Node& node, Pose& pose, glm::mat4 parent_transform)
 {
 	auto node_found = pose.find(node.name);
 	if (node_found != pose.end())
@@ -50,7 +51,7 @@ void AnimatedModel::UpdateTransformsHierarchy(ModelNode& node, Pose& pose, glm::
 		node.bone->transform = inverse_root_transform * global_transform * node.bone->offset;
 	}
 
-	node.ForEachChild([&](ModelNode& child) {
+	node.ForEachChild([&](Node& child) {
 		UpdateTransformsHierarchy(child, pose, global_transform);
 	});
 }
